@@ -1,0 +1,6 @@
+@RhidProcess_HostAddress = http://localhost:5223
+
+GET {{RhidProcess_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -5,18 +5,22 @@ namespace RhidProcess.Browser;
 
 public class BrowserFactory : IBrowserFactory
 {
-    public async Task<IBrowser> CreateBrowserAsync() =>
-        await Puppeteer.LaunchAsync(
+    public async Task<IBrowser> CreateBrowserAsync()
+    {
+        var browserFetcher = new BrowserFetcher();
+        await browserFetcher.DownloadAsync();
+        
+        return await Puppeteer.LaunchAsync(
             new LaunchOptions
             {
                 Headless = false,
                 Args = 
                 [
-                    "run",
-                    "com.google.Chrome",
                     "--no-sandbox",
-                    "--disable-dev-shm-usage"
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu"
                 ]
             });
+    }
     
 }

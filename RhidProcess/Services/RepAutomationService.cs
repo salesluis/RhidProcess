@@ -12,12 +12,8 @@ public sealed class RepAutomationService(IBrowserFactory browserFactory)
             await BrowserSession.CreateAsync(browserFactory);
 
         await session.Login.LoginAsync();
-
         await session.Unlock.OpenAsync();
-
-        await session.Unlock.FillAsync(
-            request.Serial,
-            request.Password);
+        await session.Unlock.FillAsync(request.Serial, request.Password);
 
         var contraSenha =
             await session.Unlock.GetContraSenhaAsync();

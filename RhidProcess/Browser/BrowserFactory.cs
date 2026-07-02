@@ -14,6 +14,7 @@ public class BrowserFactory : IBrowserFactory
             new LaunchOptions
             {
                 Headless = false,
+                SlowMo = 100,
                 Args = 
                 [
                     "--no-sandbox",

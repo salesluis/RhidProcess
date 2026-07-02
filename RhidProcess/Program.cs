@@ -27,6 +27,9 @@ var result = await service.ExecuteAsync(
         "123456789",
         "987654"));
 
+Console.ForegroundColor = ConsoleColor.Green;
+Console.WriteLine(result.ContraSenha);
+
 Console.WriteLine(result.ContraSenha);
 
 app.Run();

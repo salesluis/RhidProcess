@@ -1,5 +1,5 @@
+using RhidProcess.Abstractions;
 using RhidProcess.Browser;
-using RhidProcess.Models;
 using RhidProcess.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddSingleton<IBrowserFactory, BrowserFactory>();
+builder.Services.AddSingleton<RepAutomationService>();
 
 var app = builder.Build();
 
@@ -17,19 +20,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-var browserFactory = new BrowserFactory();
-
-var service = new RepAutomationService(browserFactory);
-
-var result = await service.ExecuteAsync(
-    new UnlockRequest(
-        "123456789",
-        "987654"));
-
-Console.ForegroundColor = ConsoleColor.Green;
-Console.WriteLine(result.ContraSenha);
-
-Console.WriteLine(result.ContraSenha);
 
 app.Run();

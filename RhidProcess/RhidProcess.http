@@ -1,6 +1,6 @@
 @RhidProcess_HostAddress = http://localhost:5223
 
-GET {{RhidProcess_HostAddress}}/weatherforecast/
+GET {{RhidProcess_HostAddress}}/rhid?serial=1234411&password=13412452362365235
 Accept: application/json
 
 ###

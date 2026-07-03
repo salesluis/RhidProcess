@@ -4,9 +4,9 @@ namespace RhidProcess.Browser;
 
 public class LoginPage(IPage page)
 {
-    private const string Email = "#email";
-    private const string Password = "#password";
-    private const string Submit = "#m_login_signin_submit";
+    private const string EmailSelector = "#email";
+    private const string PasswordSelector = "#password";
+    private const string SubmitSelector = "#m_login_signin_submit";
     public async Task LoginAsync()
     {
         await page.GoToAsync(
@@ -16,13 +16,13 @@ public class LoginPage(IPage page)
                 WaitUntil = [WaitUntilNavigation.Networkidle2]
             });
 
-        await page.Locator(Email)
+        await page.Locator(EmailSelector)
             .FillAsync(Configuration.Email);
 
-        await page.Locator(Password)
+        await page.Locator(PasswordSelector)
             .FillAsync(Configuration.Password);
 
-        await page.Locator(Submit)
+        await page.Locator(SubmitSelector)
             .ClickAsync();
 
         await page.WaitForNavigationAsync();

@@ -10,7 +10,7 @@ public sealed class ErrorFileLogger(IHostEnvironment environment)
     {
         Directory.CreateDirectory(_logsDirectory);
 
-        var fileName = $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss-fff}_{Guid.NewGuid().Substring(0, 12)}:N}.log";
+        var fileName = $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss-fff}_{Guid.NewGuid().ToString("N").Substring(0, 12)}:N.log";
         var filePath = Path.Combine(_logsDirectory, fileName);
         var content = BuildLogContent(exception, context);
 

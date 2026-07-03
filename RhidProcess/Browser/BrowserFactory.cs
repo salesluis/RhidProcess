@@ -15,7 +15,7 @@ public class BrowserFactory : IBrowserFactory
             {
                 //todo: mudar para true para nao abrir janela do browser
                 Headless = false,
-                // SlowMo = 100,
+                SlowMo = 100,
                 Args = 
                 [
                     "--no-sandbox",

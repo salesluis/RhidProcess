@@ -1,0 +1,9 @@
+﻿services:
+  rhidprocess:
+    image: rhidprocess
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+
+

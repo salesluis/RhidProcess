@@ -11,9 +11,7 @@ public class BrowserSession : IAsyncDisposable
     public LoginPage Login { get; }
     public UnlockRepPage Unlock { get; }
 
-    private BrowserSession(
-        IBrowser browser,
-        IPage page)
+    private BrowserSession(IBrowser browser, IPage page)
     {
         _browser = browser;
         Page = page;

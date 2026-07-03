@@ -13,8 +13,9 @@ public class BrowserFactory : IBrowserFactory
         return await Puppeteer.LaunchAsync(
             new LaunchOptions
             {
+                //todo: mudar para true para nao abrir janela do browser
                 Headless = false,
-                SlowMo = 100,
+                // SlowMo = 100,
                 Args = 
                 [
                     "--no-sandbox",

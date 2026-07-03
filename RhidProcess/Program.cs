@@ -1,5 +1,6 @@
 using RhidProcess.Abstractions;
 using RhidProcess.Browser;
+using RhidProcess.Routes;
 using RhidProcess.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +19,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
-
+app.MapRhidRoute();
 app.UseHttpsRedirection();
 
 app.Run();

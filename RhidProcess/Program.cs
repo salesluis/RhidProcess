@@ -1,5 +1,6 @@
 using RhidProcess.Abstractions;
 using RhidProcess.Browser;
+using RhidProcess.Logging;
 using RhidProcess.Routes;
 using RhidProcess.Services;
 
@@ -11,6 +12,7 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddSingleton<IBrowserFactory, BrowserFactory>();
 builder.Services.AddSingleton<RepAutomationService>();
+builder.Services.AddSingleton<ErrorFileLogger>();
 
 var app = builder.Build();
 
@@ -19,6 +21,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseMiddleware<ErrorLoggingMiddleware>();
 app.MapRhidRoute();
 app.UseHttpsRedirection();
 

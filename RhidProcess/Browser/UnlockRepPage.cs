@@ -4,10 +4,17 @@ namespace RhidProcess.Browser;
 
 public class UnlockRepPage(IPage page)
 {
+    public const string Serial = "input[placeholder='Serial']";
+    public const string Password = "input[placeholder='Senha']";
+    public const string Button = "#btnSave";
+    public const string Result = ".form-control.ng-binding.ng-scope";
+    public const string UnlockRoute = "/v2/#/desbloqueio_rep_violacao";
+
+    
     public async Task OpenAsync()
     {
         await page.GoToAsync(
-            $"{Env.BaseUrl}{Routes.Unlock}",
+            $"{Configuration.BaseUrl}{UnlockRoute}",
             new NavigationOptions
             {
                 WaitUntil = [WaitUntilNavigation.Networkidle2]
@@ -20,13 +27,13 @@ public class UnlockRepPage(IPage page)
     {
         try
         {
-            await page.Locator(UnlockSelectors.Serial)
+            await page.Locator(Serial)
                 .FillAsync(serial);
 
-            await page.Locator(UnlockSelectors.Password)
+            await page.Locator(Password)
                 .FillAsync(password);
 
-            await page.Locator(UnlockSelectors.Button)
+            await page.Locator(Button)
                 .ClickAsync();
         }
         catch
@@ -68,9 +75,9 @@ public class UnlockRepPage(IPage page)
     public async Task<string> GetContraSenhaAsync()
     {
         await page.WaitForSelectorAsync(
-            UnlockSelectors.Result);
+            Result);
 
         return page.Locator(
-            UnlockSelectors.Result).ToString() ?? "";
+            Result).ToString() ?? "";
     }
 }

@@ -1,6 +1,7 @@
 @RhidProcess_HostAddress = http://localhost:5223
 
-GET {{RhidProcess_HostAddress}}/rhid?serial=1234411&password=13412452362365235
+GET {{RhidProcess_HostAddress}}/v2/rhid/unlock?serial=1234411&password=13412452362365235
 Accept: application/json
+X-Api-Key: dev-api-key
 
 ###

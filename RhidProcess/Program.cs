@@ -1,4 +1,5 @@
 using RhidProcess.Abstractions;
+using RhidProcess.Auth;
 using RhidProcess.Browser;
 using RhidProcess.Logging;
 using RhidProcess.Routes;
@@ -23,6 +24,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ErrorLoggingMiddleware>();
+app.UseMiddleware<ApiKeyMiddleware>();
 app.MapRhidRoute();
 app.UseHttpsRedirection();
 

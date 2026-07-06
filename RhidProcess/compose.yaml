@@ -2,8 +2,18 @@
   rhidprocess:
     image: rhidprocess
     build:
-      context: .
-      dockerfile: Dockerfile
-
-
-
+      context: ..
+      dockerfile: RhidProcess/Dockerfile
+    ports:
+      - "4563:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: "http://+:8080"
+      ApiKey: "${API_KEY}"
+      PUPPETEER_EXECUTABLE_PATH: "/usr/bin/google-chrome-stable"
+    shm_size: "2gb"
+    volumes:
+      - rhid-logs:/app/Logs
+    restart: unless-stopped
+volumes:
+  rhid-logs:

@@ -7,8 +7,13 @@ public class BrowserFactory : IBrowserFactory
 {
     public async Task<IBrowser> CreateBrowserAsync()
     {
-        var browserFetcher = new BrowserFetcher();
-        await browserFetcher.DownloadAsync();
+        var executablePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH");
+
+        if (string.IsNullOrEmpty(executablePath))
+        {
+            var fetcher = new BrowserFetcher();
+            await fetcher.DownloadAsync();
+        }
         
         return await Puppeteer.LaunchAsync(
             new LaunchOptions
@@ -16,6 +21,7 @@ public class BrowserFactory : IBrowserFactory
                 //todo: mudar para true para nao abrir janela do browser
                 Headless = false,
                 SlowMo = 100,
+                ExecutablePath = executablePath,
                 Args = 
                 [
                     "--no-sandbox",

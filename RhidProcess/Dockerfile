@@ -21,16 +21,16 @@ ENV ASPNETCORE_URLS="http://+:8080"
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["RhidProcess/RhidProcess.csproj", "RhidProcess/"]
-RUN dotnet restore "RhidProcess/RhidProcess.csproj"
-COPY . .
-WORKDIR "/src/RhidProcess"
-RUN dotnet build "./RhidProcess.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR /src/RhidProcess
+COPY ["RhidProcess/RhidProcess.csproj", "./"]
+RUN dotnet restore "RhidProcess.csproj"
+COPY ["RhidProcess/", "./"]
+RUN dotnet build "RhidProcess.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./RhidProcess.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+WORKDIR /src/RhidProcess
+RUN dotnet publish "RhidProcess.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

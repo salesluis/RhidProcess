@@ -32,7 +32,7 @@ public class BrowserSession : IAsyncDisposable
         await page.SetViewportAsync(new ViewPortOptions
         {
             Width = 1920,
-            Height = 1080
+            Height = 920
         });
 
         await ConfigurePerformance(page);

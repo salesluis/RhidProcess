@@ -17,7 +17,8 @@ public sealed class ErrorLoggingMiddleware(RequestDelegate next, ErrorFileLogger
 
             await context.Response.WriteAsJsonAsync(new
             {
-                error = "Ocorreu um erro interno. Detalhes registrados em Logs."
+                error = "Ocorreu um erro interno. Detalhes registrados em Logs.",
+                stackTace =  ex.StackTrace,
             }, context.RequestAborted);
         }
     }

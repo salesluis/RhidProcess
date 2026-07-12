@@ -15,5 +15,7 @@ public static class RhidRoute
             var result = await service.ExecuteAsync(request);
             return Results.Ok(result);
         });
+
+        app.MapGet("v2/health", () => Results.Ok("healthy"));
     }
 }

@@ -15,14 +15,19 @@ public class LoginPage(IPage page)
             {
                 WaitUntil = [WaitUntilNavigation.Networkidle2]
             });
+        
+        Configuration.Deconstruct(out var email, out var password);
+        
+        await page
+            .Locator(EmailSelector)
+            .FillAsync(email);
 
-        await page.Locator(EmailSelector)
-            .FillAsync(Configuration.Email);
+        await page
+            .Locator(PasswordSelector)
+            .FillAsync(password);
 
-        await page.Locator(PasswordSelector)
-            .FillAsync(Configuration.Password);
-
-        await page.Locator(SubmitSelector)
+        await page
+            .Locator(SubmitSelector)
             .ClickAsync();
 
         await page.WaitForNavigationAsync();

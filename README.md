@@ -41,9 +41,12 @@ Também existe um endpoint de verificação:
 
 ## Como usar
 
-1. Suba a aplicação.
-2. Envie uma requisição com a chave de API no header X-Api-Key.
-3. Informe os dados necessários no endpoint de desbloqueio.
+1. Suba a aplicação rodando
+```bash
+docker compose up
+```
+3. Envie uma requisição com a chave de API no header X-Api-Key.
+4. Informe os dados necessários no endpoint de desbloqueio.
 
 Exemplo:
 
@@ -68,11 +71,3 @@ API_KEY=minha-chave-secreta
 ```
 
 Também é possível definir a chave no arquivo appsettings.Development.json para ambiente local.
-
-## Observações importantes
-
-- A aplicação usa um navegador automatizado para interagir com o site RHID.
-- O projeto ainda pode ser melhorado para deixar algumas configurações mais seguras e flexíveis, como:
-  - remover credenciais hardcoded do código;
-  - externalizar o caminho do Chrome/Chromium;
-  - melhorar tratamento de erros e logs.

@@ -7,3 +7,4 @@ riderModule.iml
 /RhidProcess/Logs/
 /.idea/.idea.RhidProcess
 .idea/.idea.RhidProcess
+.env

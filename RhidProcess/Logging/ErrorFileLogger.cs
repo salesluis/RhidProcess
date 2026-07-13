@@ -2,22 +2,41 @@ using System.Text;
 
 namespace RhidProcess.Logging;
 
-public sealed class ErrorFileLogger(IHostEnvironment environment)
+public sealed class ErrorFileLogger(
+    IHostEnvironment environment,
+    ILogger<ErrorFileLogger> fallbackLogger)
 {
     private readonly string _logsDirectory = Path.Combine(environment.ContentRootPath, "Logs");
 
-    public async Task LogAsync(Exception exception, HttpContext? context = null, CancellationToken cancellationToken = default)
+    public Task LogAsync(Exception exception, HttpContext? context = null)
     {
-        Directory.CreateDirectory(_logsDirectory);
-
-        var fileName = $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss-fff}_{Guid.NewGuid().ToString("N").Substring(0, 12)}:N.log";
-        var filePath = Path.Combine(_logsDirectory, fileName);
-        var content = BuildLogContent(exception, context);
-
-        await File.WriteAllTextAsync(filePath, content, Encoding.UTF8, cancellationToken);
+        return WriteAsync(exception, context);
     }
 
-    private static string BuildLogContent(Exception exception, HttpContext? context)
+    public Task LogResponseAsync(HttpContext context)
+    {
+        return WriteAsync(null, context);
+    }
+
+    private async Task WriteAsync(Exception? exception, HttpContext? context)
+    {
+        try
+        {
+            Directory.CreateDirectory(_logsDirectory);
+
+            var fileName = $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss-fff}_{Guid.NewGuid():N}.log";
+            var filePath = Path.Combine(_logsDirectory, fileName);
+            var content = BuildLogContent(exception, context);
+
+            await File.WriteAllTextAsync(filePath, content, Encoding.UTF8, CancellationToken.None);
+        }
+        catch (Exception loggingException)
+        {
+            fallbackLogger.LogError(loggingException, "Não foi possível gravar o log de erro em {LogsDirectory}", _logsDirectory);
+        }
+    }
+
+    private static string BuildLogContent(Exception? exception, HttpContext? context)
     {
         var builder = new StringBuilder();
 
@@ -25,8 +44,16 @@ public sealed class ErrorFileLogger(IHostEnvironment environment)
         builder.AppendLine("INFORMAÇÕES DO ERRO");
         builder.AppendLine("================================================================================");
         builder.AppendLine($"Data/Hora: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-        builder.AppendLine($"Tipo: {exception.GetType().FullName}");
-        builder.AppendLine($"Mensagem: {exception.Message}");
+        if (exception is not null)
+        {
+            builder.AppendLine($"Tipo: {exception.GetType().FullName}");
+            builder.AppendLine($"Mensagem: {exception.Message}");
+        }
+        else
+        {
+            builder.AppendLine("Tipo: Resposta HTTP com erro");
+            builder.AppendLine("Mensagem: A requisição terminou com status HTTP 5xx sem lançar uma exceção.");
+        }
 
         if (exception is HttpRequestException httpException && httpException.StatusCode is not null)
             builder.AppendLine($"Status HTTP: {(int)httpException.StatusCode.Value} ({httpException.StatusCode})");
@@ -41,7 +68,7 @@ public sealed class ErrorFileLogger(IHostEnvironment environment)
             builder.AppendLine($"Remote IP: {context.Connection.RemoteIpAddress}");
         }
 
-        var inner = exception.InnerException;
+        var inner = exception?.InnerException;
         while (inner is not null)
         {
             builder.AppendLine($"Exceção Interna ({inner.GetType().FullName}): {inner.Message}");
@@ -52,7 +79,7 @@ public sealed class ErrorFileLogger(IHostEnvironment environment)
         builder.AppendLine("================================================================================");
         builder.AppendLine("STACKTRACE");
         builder.AppendLine("================================================================================");
-        builder.AppendLine(exception.ToString());
+        builder.AppendLine(exception?.ToString() ?? "Não há stack trace porque nenhuma exceção foi lançada.");
 
         return builder.ToString();
     }

@@ -69,6 +69,11 @@ API_KEY=minha-chave-secreta
 
 Também é possível definir a chave no arquivo appsettings.Development.json para ambiente local.
 
+### Logs de erro
+
+No Docker Compose, os logs são gravados em `./Logs` no host e montados em `/app/Logs` no container.
+Defina `LOGS_PATH` no arquivo `.env` para usar outro diretório do host.
+
 ## Observações importantes
 
 - A aplicação usa um navegador automatizado para interagir com o site RHID.

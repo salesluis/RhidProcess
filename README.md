@@ -41,9 +41,12 @@ Também existe um endpoint de verificação:
 
 ## Como usar
 
-1. Suba a aplicação.
-2. Envie uma requisição com a chave de API no header X-Api-Key.
-3. Informe os dados necessários no endpoint de desbloqueio.
+1. Suba a aplicação rodando
+```bash
+docker compose up
+```
+3. Envie uma requisição com a chave de API no header X-Api-Key.
+4. Informe os dados necessários no endpoint de desbloqueio.
 
 Exemplo:
 

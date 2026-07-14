@@ -77,10 +77,3 @@ Também é possível definir a chave no arquivo appsettings.Development.json par
 No Docker Compose, os logs são gravados em `./Logs` no host e montados em `/app/Logs` no container.
 Defina `LOGS_PATH` no arquivo `.env` para usar outro diretório do host.
 
-## Observações importantes
-
-- A aplicação usa um navegador automatizado para interagir com o site RHID.
-- O projeto ainda pode ser melhorado para deixar algumas configurações mais seguras e flexíveis, como:
-  - remover credenciais hardcoded do código;
-  - externalizar o caminho do Chrome/Chromium;
-  - melhorar tratamento de erros e logs.

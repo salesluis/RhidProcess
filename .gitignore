@@ -5,6 +5,7 @@ riderModule.iml
 /_ReSharper.Caches/
 /RhidProcess/Configuration.cs
 /RhidProcess/Logs/
+/Logs/
 /.idea/.idea.RhidProcess
 .idea/.idea.RhidProcess
 .env

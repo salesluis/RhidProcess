@@ -7,18 +7,21 @@ public sealed class ErrorLoggingMiddleware(RequestDelegate next, ErrorFileLogger
         try
         {
             await next(context);
+
+            if (context.Response.StatusCode >= StatusCodes.Status500InternalServerError)
+                await logger.LogResponseAsync(context);
         }
         catch (Exception ex)
         {
-            await logger.LogAsync(ex, context, context.RequestAborted);
-
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            await logger.LogAsync(ex, context);
+
             context.Response.ContentType = "application/json";
 
             await context.Response.WriteAsJsonAsync(new
             {
                 error = "Ocorreu um erro interno. Detalhes registrados em Logs.",
-                stackTace =  ex.StackTrace,
+                stackTace = ex.StackTrace,
             }, context.RequestAborted);
         }
     }

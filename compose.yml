@@ -13,7 +13,5 @@
       PUPPETEER_EXECUTABLE_PATH: ${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
     shm_size: ${SHM_SIZE:-2gb}
     volumes:
-      - rhid-logs:/app/Logs
+      - ${LOGS_PATH:-./Logs}:/app/Logs
     restart: unless-stopped
-volumes:
-  rhid-logs:

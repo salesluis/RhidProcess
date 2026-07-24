@@ -11,6 +11,13 @@
       ASPNETCORE_URLS: ${ASPNETCORE_URLS:-http://+:8080}
       ApiKey: ${API_KEY:-dev-api-key}
       PUPPETEER_EXECUTABLE_PATH: ${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
+      Rhid__BaseUrl: ${Rhid__BaseUrl:-https://www.rhid.com.br}
+      Rhid__LoginRoute: ${Rhid__LoginRoute:-/v2/#/login}
+      Rhid__UnlockRoute: ${Rhid__UnlockRoute:-/v2/#/desbloqueio_rep_violacao}
+      Rhid__Email: ${Rhid__Email:-}
+      Rhid__Password: ${Rhid__Password:-}
+      Rhid__NavigationTimeoutSeconds: ${Rhid__NavigationTimeoutSeconds:-30}
+      Rhid__ActionTimeoutSeconds: ${Rhid__ActionTimeoutSeconds:-30}
     shm_size: ${SHM_SIZE:-2gb}
     volumes:
       - ${LOGS_PATH:-./Logs}:/app/Logs

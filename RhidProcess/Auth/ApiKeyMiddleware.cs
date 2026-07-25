@@ -1,7 +1,3 @@
-using RhidProcess.Diagnostics;
-using RhidProcess.Logging;
-using RhidProcess.Models;
-
 namespace RhidProcess.Auth;
 
 public sealed class ApiKeyMiddleware(RequestDelegate next, IConfiguration configuration)
@@ -14,35 +10,16 @@ public sealed class ApiKeyMiddleware(RequestDelegate next, IConfiguration config
 
         if (string.IsNullOrEmpty(expectedKey))
         {
-            var errorId = ErrorContext.GetErrorId(context);
-            ErrorContext.Set(
-                context,
-                "API_KEY_CONFIGURATION_INVALID",
-                AutomationStages.Configuration,
-                errorId);
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            await context.Response.WriteAsJsonAsync(
-                new ApiErrorResponse(
-                    errorId,
-                    "API_KEY_CONFIGURATION_INVALID",
-                    AutomationStages.Configuration,
-                    "A autenticação da API não está configurada."),
-                context.RequestAborted);
+            await context.Response.WriteAsJsonAsync(new { error = "ApiKey não configurada." });
             return;
         }
 
         if (!context.Request.Headers.TryGetValue(HeaderName, out var providedKey)
             || !string.Equals(expectedKey, providedKey, StringComparison.Ordinal))
         {
-            var errorId = ErrorContext.GetErrorId(context);
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            await context.Response.WriteAsJsonAsync(
-                new ApiErrorResponse(
-                    errorId,
-                    "API_KEY_INVALID",
-                    AutomationStages.Request,
-                    "Api key inválida ou ausente."),
-                context.RequestAborted);
+            await context.Response.WriteAsJsonAsync(new { error = "Api key inválida ou ausente." });
             return;
         }
 

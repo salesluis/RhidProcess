@@ -22,8 +22,4 @@
       <Folder Include="Logs\" />
     </ItemGroup>
 
-    <ItemGroup>
-      <InternalsVisibleTo Include="RhidProcess.Tests" />
-    </ItemGroup>
-
 </Project>

@@ -1,125 +1,86 @@
 # RhidProcess
 
-API ASP.NET que automatiza, com Puppeteer e Chrome headless, o desbloqueio de
-equipamentos no portal RHID.
+## O que é este projeto?
 
-## Endpoints
+Este projeto é uma API construída com ASP.NET que automatiza um fluxo de desbloqueio no portal RHID utilizando um navegador headless via Puppeteer.
 
-### Desbloquear um equipamento
+Ele recebe um serial e uma senha, realiza o login na plataforma, navega até a tela de desbloqueio e retorna a contra-senha obtida.
 
-```http
-GET /v2/rhid/unlock?serial=SERIAL&password=SENHA
-X-Api-Key: CHAVE_DA_API
+## O que a API faz
+
+A API expõe um endpoint para executar esse processo:
+
+- GET /v2/rhid/unlock
+  - Parâmetros de query:
+    - serial
+    - password
+  - Retorno: um objeto com a propriedade contraSenha
+
+Fluxo interativo da requisição:
+
+```mermaid
+flowchart LR
+    Client[Cliente] -->|1. envia serial e senha| Sistema[API ASP.NET]
+    Sistema -->|2. valida chave| Auth[Middleware de API Key]
+    Auth -->|3. autorizado| Automacao[Serviço de Automação]
+    Automacao -->|4. navega no portal| Browser[Navegador Headless]
+    Browser -->|5. realiza login e desbloqueio| Rhid[Portal RHID]
+    Rhid -->|6. retorna resultado| Browser
+    Browser -->|7. entrega contra-senha| Automacao
+    Automacao -->|8. responde ao cliente| Sistema
+    Sistema -->|9. retorno final| Client
+
+    classDef highlight fill:#4ade80,stroke:#15803d,stroke-width:3px,color:#000,font-weight:bold
+    class Auth highlight
 ```
 
-Em caso de sucesso, a API preserva o contrato existente:
+Também existe um endpoint de verificação:
 
-```json
-{
-  "contraSenha": "resultado"
-}
+- GET /v2/health
+  - Retorna "healthy" quando a API está disponível
+
+## Como usar
+
+1. Suba a aplicação rodando
+```bash
+docker compose up
 ```
+3. Envie uma requisição com a chave de API no header X-Api-Key.
+4. Informe os dados necessários no endpoint de desbloqueio.
 
-> **Atenção:** este endpoint continua usando `GET` por compatibilidade. A senha
-> do equipamento fica na URL e pode ser registrada por navegador, proxy,
-> balanceador ou ferramenta de observabilidade, mesmo que os logs internos da
-> aplicação sejam sanitizados. Evite reutilizar senhas e restrinja a retenção e
-> o acesso aos logs da infraestrutura.
-
-Exemplo local:
+Exemplo:
 
 ```bash
-curl \
-  -H "X-Api-Key: CHAVE_DA_API" \
-  "http://localhost:4563/v2/rhid/unlock?serial=SERIAL&password=SENHA"
+curl -H "X-Api-Key: sua-chave" "http://localhost:4563/v2/rhid/unlock?serial=123456&password=minhasenha"
 ```
 
-### Verificar a saúde
+## Configuração necessária
 
-```http
-GET /v2/health
-X-Api-Key: CHAVE_DA_API
+A aplicação exige uma chave de API para acessar os endpoints.
+
+### Configuração da API key
+
+A chave pode ser configurada via variável de ambiente:
+
+- ApiKey
+
+No Docker Compose, isso é feito através do arquivo .env, por exemplo:
+
+```env
+API_KEY=minha-chave-secreta
 ```
 
-O health check valida somente a configuração local obrigatória e a existência
-do executável do Chrome. Ele não autentica nem faz requisição ao portal RHID.
+Também é possível definir a chave no arquivo appsettings.Development.json para ambiente local.
 
-- `200 OK` com `{"status":"healthy"}`: configuração local pronta para uso.
-- `503 Service Unavailable`: resposta no contrato de erro, sem revelar qual
-  configuração está ausente ou inválida.
+### Logs de erro
 
-## Configuração
+No Docker Compose, os logs são gravados em `./Logs` no host e montados em `/app/Logs` no container.
+Defina `LOGS_PATH` no arquivo `.env` para usar outro diretório do host.
 
-Copie `.env.example` para `.env`, substitua todos os valores de exemplo e inicie:
+## Observações importantes
 
-```bash
-cp .env.example .env
-docker compose up --build
-```
-
-As opções `Rhid__...` seguem a convenção de configuração hierárquica do
-ASP.NET (`__` representa `:`):
-
-| Variável | Finalidade |
-| --- | --- |
-| `API_KEY` | Chave exigida no header `X-Api-Key`. |
-| `Rhid__BaseUrl` | Origem HTTPS do portal RHID, sem credenciais. |
-| `Rhid__Email` | Conta de serviço usada no login do portal. |
-| `Rhid__Password` | Senha da conta de serviço. |
-| `Rhid__LoginRoute` | Rota da página de login. |
-| `Rhid__UnlockRoute` | Rota da página de desbloqueio. |
-| `Rhid__NavigationTimeoutSeconds` | Limite para navegações do browser. |
-| `Rhid__ActionTimeoutSeconds` | Limite para ações e seletores do browser. |
-| `PUPPETEER_EXECUTABLE_PATH` | Caminho absoluto para o Chrome. |
-| `LOGS_PATH` | Diretório de logs no host. |
-
-Não grave `.env`, credenciais ou chaves reais no repositório. Credenciais RHID
-que já tenham aparecido no histórico Git devem ser consideradas comprometidas e
-rotacionadas; removê-las apenas da versão atual não invalida cópias anteriores.
-
-## Diagnóstico de erros
-
-Falhas da automação retornam um identificador correlacionável, sem stack trace
-ou dados sensíveis:
-
-```json
-{
-  "errorId": "identificador-da-falha",
-  "code": "RHID_LOGIN_NOT_CONFIRMED",
-  "stage": "login_submit",
-  "message": "Não foi possível confirmar o login no RHID."
-}
-```
-
-Principais códigos:
-
-| Código | HTTP | Significado |
-| --- | ---: | --- |
-| `RHID_CONFIGURATION_INVALID` | 503 | Configuração local ou Chrome inválido. |
-| `RHID_UPSTREAM_TIMEOUT` | 504 | O portal não respondeu dentro do timeout. |
-| `RHID_LOGIN_NOT_CONFIRMED` | 502 | O envio ocorreu, mas o login não foi confirmado. |
-| `RHID_UPSTREAM_FAILURE` | 502 | Resposta ou comportamento inesperado do portal. |
-| `INTERNAL_ERROR` | 500 | Falha interna não classificada. |
-
-O campo `stage` localiza a etapa: `configuration`, `browser_startup`,
-`login_page`, `login_submit`, `unlock_page`, `unlock_submit` ou `result_read`.
-
-No Docker Compose, os arquivos ficam em `${LOGS_PATH:-./Logs}`. Use o `errorId`
-recebido pela API para localizar o registro correspondente:
-
-```bash
-rg --fixed-strings "IDENTIFICADOR_RECEBIDO" Logs/
-```
-
-Os logs internos omitem query string, credenciais, API key, serial completo,
-HTML e screenshots. Eventos do portal registram somente dados operacionais
-sanitizados, como etapa, duração, tipo da exceção e status HTTP.
-
-## Desenvolvimento
-
-Para compilar e executar os testes sem acessar o portal real:
-
-```bash
-dotnet build RhidProcess.slnx
-dotnet test RhidProcess.slnx
-```
+- A aplicação usa um navegador automatizado para interagir com o site RHID.
+- O projeto ainda pode ser melhorado para deixar algumas configurações mais seguras e flexíveis, como:
+  - remover credenciais hardcoded do código;
+  - externalizar o caminho do Chrome/Chromium;
+  - melhorar tratamento de erros e logs.

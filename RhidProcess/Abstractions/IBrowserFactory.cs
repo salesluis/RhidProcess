@@ -4,5 +4,5 @@ namespace RhidProcess.Abstractions;
 
 public interface IBrowserFactory
 {
-    Task<IBrowser> CreateBrowserAsync();
+    Task<IBrowser> CreateBrowserAsync(CancellationToken cancellationToken = default);
 }

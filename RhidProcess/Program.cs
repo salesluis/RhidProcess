@@ -28,6 +28,6 @@ var app = builder.Build();
 app.UseMiddleware<ErrorLoggingMiddleware>();
 app.UseMiddleware<ApiKeyMiddleware>();
 app.MapRhidRoute();
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.Run();

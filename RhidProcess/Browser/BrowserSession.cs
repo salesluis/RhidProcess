@@ -11,22 +11,24 @@ public class BrowserSession : IAsyncDisposable
     public LoginPage Login { get; }
     public UnlockRepPage Unlock { get; }
 
-    private BrowserSession(IBrowser browser, IPage page)
+    private BrowserSession(IBrowser browser, IPage page, RhidOptions options)
     {
         _browser = browser;
         Page = page;
 
-        Login = new LoginPage(page);
-        Unlock = new UnlockRepPage(page);
+        Login = new LoginPage(page, options);
+        Unlock = new UnlockRepPage(page, options);
     }
 
-    public static async Task<BrowserSession> CreateAsync(IBrowserFactory factory)
+    public static async Task<BrowserSession> CreateAsync(
+        IBrowserFactory factory,
+        RhidOptions options)
     {
         var browser = await factory.CreateBrowserAsync();
         var page = await browser.NewPageAsync();
 
-        page.DefaultTimeout = 30000;
-        page.DefaultNavigationTimeout = 30000;
+        page.DefaultTimeout = options.DefaultTimeout;
+        page.DefaultNavigationTimeout = options.DefaultNavigationTimeout;
         
         // todo: excluir ao finalizar aplicação
         await page.SetViewportAsync(new ViewPortOptions
@@ -37,7 +39,7 @@ public class BrowserSession : IAsyncDisposable
 
         await ConfigurePerformance(page);
 
-        return new BrowserSession(browser, page);
+        return new BrowserSession(browser, page, options);
     }
 
     private static async Task ConfigurePerformance(IPage page)

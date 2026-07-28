@@ -2,7 +2,9 @@ using PuppeteerSharp;
 
 namespace RhidProcess.Browser;
 
-public class UnlockRepPage(IPage page)
+public class UnlockRepPage(
+    IPage page,
+    RhidOptions options)
 {
     
     private const string Serial = "input[placeholder='Serial']";
@@ -12,8 +14,9 @@ public class UnlockRepPage(IPage page)
     
     public async Task OpenAsync()
     {
+        var url = new Uri($"{options.BaseUrl}{options.UnlockRoute}").ToString();
         await page.GoToAsync(
-            $"{Configuration.BaseUrl}{Configuration.UnlockRoute}",
+            url,
             new NavigationOptions
             {
                 WaitUntil = [WaitUntilNavigation.Networkidle2]

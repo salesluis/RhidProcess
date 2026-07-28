@@ -8,7 +8,8 @@ public sealed class ErrorLoggingMiddleware(RequestDelegate next, ErrorFileLogger
         {
             await next(context);
 
-            if (context.Response.StatusCode >= StatusCodes.Status500InternalServerError)
+            if (context.Response.StatusCode >= StatusCodes.Status500InternalServerError
+                && !IsHealthEndpoint(context.Request.Path))
                 await logger.LogResponseAsync(context);
         }
         catch (Exception ex)
@@ -24,5 +25,10 @@ public sealed class ErrorLoggingMiddleware(RequestDelegate next, ErrorFileLogger
                 stackTace = ex.StackTrace,
             }, context.RequestAborted);
         }
+    }
+
+    private static bool IsHealthEndpoint(PathString path)
+    {
+        return path.StartsWithSegments("/v2/health", StringComparison.OrdinalIgnoreCase);
     }
 }

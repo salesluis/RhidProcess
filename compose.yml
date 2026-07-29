@@ -14,6 +14,8 @@
       ApiKey: ${API_KEY:-dev-api-key}
       PUPPETEER_EXECUTABLE_PATH: ${PUPPETEER_EXECUTABLE_PATH:-/usr/bin/google-chrome-stable}
     shm_size: ${SHM_SIZE:-2gb}
+    certificate_public:
+      external: true
     volumes:
       - ${LOGS_PATH:-./Logs}:/app/Logs
     restart: unless-stopped

@@ -3,11 +3,10 @@ using RhidProcess.Abstractions;
 
 namespace RhidProcess.Browser;
 
-public class BrowserFactory : IBrowserFactory
+public class BrowserFactory(BrowserRuntimeSettings browserRuntime) : IBrowserFactory
 {
     public async Task<IBrowser> CreateBrowserAsync()
     {
-        var executablePath =  "/usr/bin/google-chrome-stable";
         var headless = true;
         var args =  new[] { "--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu" };
 
@@ -15,7 +14,7 @@ public class BrowserFactory : IBrowserFactory
             new LaunchOptions
             {
                 Headless = headless,
-                ExecutablePath = executablePath,
+                ExecutablePath = browserRuntime.ExecutablePath,
                 Args = args
             });
     }

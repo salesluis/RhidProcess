@@ -34,10 +34,24 @@ flowchart LR
     class Auth highlight
 ```
 
-Também existe um endpoint de verificação:
+## Health
 
+Os endpoints de health não executam desbloqueios nem fazem login no RHID.
+
+- GET /v2/health/live
+  - Público.
+  - Confirma somente que o processo ASP.NET está respondendo.
+- GET /v2/health/ready
+  - Exige X-Api-Key.
+  - Verifica configuração RHID, executável do Chrome, acesso ao diretório de logs,
+    conectividade HTTP ao RHID e o resumo seguro das automações desde a inicialização.
+  - Retorna 200 para estados Healthy e Degraded; retorna 503 quando a aplicação
+    não está pronta para automatizar.
 - GET /v2/health
-  - Retorna "healthy" quando a API está disponível
+  - Alias autenticado para /v2/health/ready.
+
+As respostas incluem estado geral, duração, componentes verificados e contadores
+sem serial, senha, e-mail, API key, URL com query string ou stack trace.
 
 ## Como usar
 
@@ -72,10 +86,27 @@ API_KEY=minha-chave-secreta
 
 Também é possível definir a chave no arquivo appsettings.Development.json para ambiente local.
 
+### Configuração do RHID
+
+Configure as credenciais somente por variáveis de ambiente. No Docker Compose,
+o arquivo .env deve conter:
+
+    RHID_EMAIL=usuario@empresa.com.br
+    RHID_PASSWORD='senha-secreta'
+
+As variáveis são passadas ao ASP.NET como Rhid__Email e Rhid__Password.
+A aplicação não inicia se essas credenciais estiverem ausentes. Não versione o
+arquivo .env nem use credenciais reais em appsettings.json.
+
 ### Logs de erro
 
 No Docker Compose, os logs são gravados em `./Logs` no host e montados em `/app/Logs` no container.
 Defina `LOGS_PATH` no arquivo `.env` para usar outro diretório do host.
+
+O Compose também executa /v2/health/ready a cada 30 segundos como healthcheck
+do contêiner. Valide a configuração sem imprimir variáveis resolvidas com:
+
+    docker compose config --quiet
 
 ## Observações importantes
 

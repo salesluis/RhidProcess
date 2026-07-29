@@ -6,6 +6,19 @@ public sealed class ApiKeyMiddleware(RequestDelegate next, IConfiguration config
 
     public async Task InvokeAsync(HttpContext context)
     {
+        if (context.Request.Path.StartsWithSegments(
+                "/v2/health",
+                StringComparison.OrdinalIgnoreCase))
+        {
+            context.Response.Headers.CacheControl = "no-store";
+        }
+
+        if (context.Request.Path.Equals("/v2/health/live", StringComparison.OrdinalIgnoreCase))
+        {
+            await next(context);
+            return;
+        }
+
         var expectedKey = configuration["ApiKey"];
 
         if (string.IsNullOrEmpty(expectedKey))

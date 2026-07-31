@@ -29,14 +29,7 @@ public class BrowserSession : IAsyncDisposable
 
         page.DefaultTimeout = options.DefaultTimeout;
         page.DefaultNavigationTimeout = options.DefaultNavigationTimeout;
-        
-        // todo: excluir ao finalizar aplicação
-        await page.SetViewportAsync(new ViewPortOptions
-        {
-            Width = 1920,
-            Height = 920
-        });
-
+    
         await ConfigurePerformance(page);
 
         return new BrowserSession(browser, page, options);

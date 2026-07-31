@@ -64,4 +64,5 @@ public sealed class RepAutomationService(
             _ => "AUTOMATION_ERROR"
         };
     }
+    //todo: add method for validate request and return UnlockResponse with error message if invalid
 }

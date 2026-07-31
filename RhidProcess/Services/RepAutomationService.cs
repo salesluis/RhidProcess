@@ -20,6 +20,11 @@ public sealed class RepAutomationService(
 
         try
         {
+            if(string.IsNullOrWhiteSpace(request.Serial) || string.IsNullOrWhiteSpace(request.Password))
+            {
+                return new UnlockResponse("Os campos 'serial' e 'senha' são obrigatórios.");
+            }
+
             await using var session =
                 await BrowserSession.CreateAsync(
                     browserFactory,

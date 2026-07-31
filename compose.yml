@@ -1,6 +1,5 @@
 ﻿services:
   rhidprocess:
-    image: rhidprocess
     build:
       context: .
       dockerfile: RhidProcess/Dockerfile
@@ -33,3 +32,4 @@
 networks:
   certificate_public:
     name: certificate_public
+    external: true
